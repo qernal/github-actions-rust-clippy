@@ -10,6 +10,11 @@ jobs:
         shell: bash
         run: |
           docker build -t ghcr.io/qernal/gh-actions/rust-clippy-x86_64:latest -f ./Dockerfile ./
+  push:
+    runs-on: ubuntu-latest
+    name: Push gh-actions-rust-clippy image
+    needs: [build]
+    steps:
       - name: Push image
         shell: bash
         run: |

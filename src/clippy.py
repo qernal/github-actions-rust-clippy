@@ -1,5 +1,4 @@
 import json
-# import os
 import subprocess
 
 class Clippy:
@@ -15,7 +14,7 @@ class Clippy:
         command = self.build_command()
 
         try:
-            process = subprocess.Popen(command, stdout = subprocess.PIPE, shell=True, cwd="/code")
+            process = subprocess.Popen(command, stdout = subprocess.PIPE, shell=True, cwd="/github/workspace")
             return process.stdout.readlines()
         except subprocess.CalledProcessError as e:
             print("Error in calling docker; ", e.output)
