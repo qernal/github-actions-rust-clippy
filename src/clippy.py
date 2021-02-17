@@ -31,13 +31,10 @@ class Clippy:
         self.generate_github_output()
 
         for message in self.github_output:
-            print(message)
+            print(message.replace('\n', '%0A').replace('\r', '%0D'))
 
     def process_output(self, output):
         for line in output:
-            # print(line)
-            # line = line.strip()
-
             try:
                 line = line.strip()
                 json_line = json.loads(line)
@@ -61,13 +58,11 @@ class Clippy:
                 self.github_output.append(gh_output)
 
     def line_compiler_to_gh(self, json_line):
-        # print(json_line)
         level = json_line['message']['level']
         path = self.find_compiler_path(json_line)
         message = json_line['message']['rendered']
         span = self.find_compiler_span(json_line, path)
 
-        # print("span: ", span)
         if path == None or span == None:
             return None
 
@@ -81,7 +76,6 @@ class Clippy:
         return None
 
     def find_compiler_span(self, json_line, src_path):
-        # print("span search: ", src_path)
         if "message" in json_line:
             if "spans" in json_line['message']:
                 for span in json_line['message']['spans']:
