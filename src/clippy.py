@@ -3,6 +3,7 @@ import subprocess
 
 class Clippy:
     args = [
+        "HOME=/root",
         "cargo",
         "clippy",
         "--message-format=json"
