@@ -2,8 +2,8 @@ on: [push]
 
 jobs:
   build:
-    runs-on: self-hosted
-    name: Build Mantle
+    runs-on: ubuntu-latest
+    name: Build gh-actions-rust-clippy
     steps:
       - uses: actions/checkout@v2
       - name: Build image
