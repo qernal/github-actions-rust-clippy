@@ -1,2 +1,3 @@
-# github-actions-rust-clippy
-GitHub Actions: Rust Clippy
+# Github Actions: Rust Clippy
+
+Github action to run clippy against a repository
