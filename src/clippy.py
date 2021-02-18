@@ -44,7 +44,7 @@ class Clippy:
         return ' '.join(ssh_args + self.args)
 
     # main handler
-    def run(self, dir = "/github/workspace"):
+    def run(self, dir):
         if 'path_glob' in self.config:
             for path in glob.glob("/".join([dir, self.config['path_glob']])):
                 if os.path.exists("".join([path, "Cargo.toml"])):
@@ -59,11 +59,11 @@ class Clippy:
     # compile the command and output together
     def compile(self, dir):
         output = self.exec(dir)
-        self.process_output(output)
+        self.process_output(output, dir)
         self.generate_github_output()
 
     # process clippy output
-    def process_output(self, output):
+    def process_output(self, output, dir):
         for line in output:
             try:
                 line = line.strip()
@@ -72,7 +72,7 @@ class Clippy:
                 if "reason" in json_line:
                     if json_line['reason'] == "compiler-message":
                         # we'll accept this and add it to our compiler output
-                        self.compiler_output.append(json_line)
+                        self.compiler_output.append({"json": json_line, "path": dir})
             # not a json line so, we'll skip
             except AttributeError:
                 print('Skipping line in output; ', line)
@@ -82,13 +82,13 @@ class Clippy:
     # convert compiler output to github output
     def generate_github_output(self):
         for json_line in self.compiler_output:
-            gh_output = self.line_compiler_to_gh(json_line)
+            gh_output = self.line_compiler_to_gh(json_line['json'], json_line['path'])
 
             if gh_output != None:
                 self.github_output.append(gh_output)
 
     # convert each compiler line to a valid github warning or error
-    def line_compiler_to_gh(self, json_line):
+    def line_compiler_to_gh(self, json_line, dir):
         level = json_line['message']['level']
         path = self.find_compiler_path(json_line)
         message = json_line['message']['rendered']
@@ -96,6 +96,9 @@ class Clippy:
 
         if path == None or span == None:
             return None
+
+        if 'path_glob' in self.config:
+            path = dir.replace(self.config['base_dir'] + "/", "") + path
 
         if level == "warning":
             return f"::warning file={path},line={span['line_start']},col={span['column_start']}::{message}"
@@ -142,6 +145,7 @@ class Clippy:
 
     def __init__(self):
         # inputs
+        self.config['base_dir'] = '/github/workspace'
         arg_path_glob = os.environ.get('INPUT_PATH_GLOB')
         arg_clippy_args = os.environ.get('INPUT_ARGS')
         arg_git_ssh_key = os.environ.get('INPUT_GIT_SSH_KEY')
@@ -153,6 +157,6 @@ class Clippy:
             self.enable_ssh(arg_git_ssh_key)
 
         # run app
-        self.run()
+        self.run(self.config['base_dir'])
 
 Clippy()
