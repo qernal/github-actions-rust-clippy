@@ -1,0 +1,20 @@
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build gh-actions-rust-clippy
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image
+        shell: bash
+        run: |
+          docker build -t ghcr.io/qernal/gh-actions/rust-clippy-x86_64:latest -f ./Dockerfile ./
+      - name: Push image
+        shell: bash
+        run: |
+          echo ${{ secrets.GH_PAT }} | docker login ghcr.io --username qernal --password-stdin
+          docker push ghcr.io/qernal/gh-actions/rust-clippy-x86_64:latest
+# TODO: add testing of the container and output
+
+

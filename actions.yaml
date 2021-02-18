@@ -1,0 +1,21 @@
+name: 'qs-rust-clippy'
+description: 'Rust Clippy (linter)'
+author: 'Qernal (https://qernal.com/)'
+branding:
+  icon: activity
+  color: purple
+
+inputs:
+  args:
+    description: Arguments for clippy configuration
+    required: false
+  path_glob:
+    description: Glob for path finding (when a repository has multiple rust projects)
+    required: false
+  git_ssh_key:
+    description: Base64 encoded SSH key used for cargo when private git repositories are specified
+    required: false
+
+runs:
+  using: 'docker'
+  image: 'ghcr.io/qernal/gh-actions/rust-clippy-x86_64:latest'
