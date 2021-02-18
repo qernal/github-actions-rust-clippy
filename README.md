@@ -22,12 +22,13 @@ jobs:
 
 ## Action parameters
 
-> Note: These are yet to be implemented
+> Note: `args` is not yet implemented, `path_glob` and `git_ssh_key` are
 
 | Parameter | Description | Required |
 | ---- | ---- | ---- |
 | `args` | Arguments for clippy configuration | N |
 | `path_glob` | Glob for path finding (when a repository has multiple rust projects) | N |
+| `git_ssh_key` | Base64 encoded SSH key used for cargo when private git repositories are specified | N |
 
 Example;
 
@@ -38,6 +39,7 @@ Example;
         with:
           args: "--"
           path_glob: "**/src"
+          git_ssh_key: "${{ secrets.base64_ssh_key }}" # Must be base64 encoded and a valid RSA key
 ```
 
 ## Manual runs
