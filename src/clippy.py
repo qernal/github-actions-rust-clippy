@@ -150,10 +150,10 @@ class Clippy:
         arg_clippy_args = os.environ.get('INPUT_ARGS')
         arg_git_ssh_key = os.environ.get('INPUT_GIT_SSH_KEY')
 
-        if arg_path_glob != None:
+        if arg_path_glob != None and len(arg_path_glob) > 0:
             self.config['path_glob'] = arg_path_glob
 
-        if arg_git_ssh_key != None:
+        if arg_git_ssh_key != None and len(arg_git_ssh_key) > 0:
             self.enable_ssh(arg_git_ssh_key)
 
         # run app
