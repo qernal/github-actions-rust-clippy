@@ -8,6 +8,8 @@ Github action to run clippy against a repository, this providers linting with th
 - SSH key for projects that use cargo to pull private Git repositories
 - Error and Warning outputs that highlight specific lines on PR's and commits
 
+![alt text](gh_lint_example.png "GitHub Lint Example")
+
 ## Workflow configuration
 
 To use this action, define it in your workflow;
