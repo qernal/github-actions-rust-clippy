@@ -2,7 +2,11 @@
 
 ![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)
 
-Github action to run clippy against a repository
+Github action to run clippy against a repository, this providers linting with the following features;
+
+- Globbing for repositories that have multiple rust projects in them
+- SSH key for projects that use cargo to pull private Git repositories
+- Error and Warning outputs that highlight specific lines on PR's and commits
 
 ## Workflow configuration
 
@@ -17,7 +21,7 @@ jobs:
     name: Lint package
     steps:
       - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@v1
+      - uses: qernal/github-actions-rust-clippy@v1.1
 ```
 
 ## Action parameters
@@ -35,7 +39,7 @@ Example;
 ```yaml
     steps:
       - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@v1
+      - uses: qernal/github-actions-rust-clippy@v1.1
         with:
           args: "--"
           path_glob: "**/src"
