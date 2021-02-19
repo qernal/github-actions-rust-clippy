@@ -18,4 +18,4 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'ghcr.io/qernal/gh-actions/rust-clippy-x86_64:latest'
+  image: 'docker://ghcr.io/qernal/gh-actions/rust-clippy-x86_64:latest'
