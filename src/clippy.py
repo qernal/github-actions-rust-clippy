@@ -57,7 +57,7 @@ class Clippy:
         gen_args.append('&&')
 
         # copy cargo
-        gen_args.append("cp -r ~/.cargo/ /tmp/" + rand_path + "/")
+        gen_args.append("cp -r /root/.cargo/ /tmp/" + rand_path + "/")
         gen_args.append('&&')
 
         # vars for cargo to work in another location
