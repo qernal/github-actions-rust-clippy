@@ -63,6 +63,7 @@ class Clippy:
         # vars for cargo to work in another location
         gen_args.append("PATH=$PATH:/tmp/" + rand_path + "/.cargo/bin/")
         gen_args.append("CARGO_HOME=/tmp/" + rand_path)
+        gen_args.append("HOME=/root/") # fix for HOME injection from GH runner
 
         return ' '.join(gen_args + self.args)
 
