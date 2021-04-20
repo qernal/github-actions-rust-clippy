@@ -6,7 +6,7 @@ branding:
   color: purple
 
 inputs:
-  args:
+  clippy_args:
     description: Arguments for clippy configuration
     required: false
   path_glob:
@@ -14,6 +14,9 @@ inputs:
     required: false
   git_ssh_key:
     description: Base64 encoded SSH key used for cargo when private git repositories are specified
+    required: false
+  threads:
+    description: Threads to run at once - for concurrency of functions used with `path_glob` (integer)
     required: false
 
 runs:

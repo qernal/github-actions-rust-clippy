@@ -3,11 +3,13 @@ import subprocess
 import os
 import glob
 import base64
+import random
+import sys
+from concurrent.futures import ThreadPoolExecutor, wait
 
 class Clippy:
     config = dict()
     args = [
-        "HOME=/root",
         "cargo",
         "clippy",
         "--message-format=json"
@@ -18,6 +20,7 @@ class Clippy:
     # execute the clippy command
     def exec(self, dir):
         command = self.build_command()
+        print("-- COMMAND: ", command)
 
         try:
             process = subprocess.Popen(command, stdout = subprocess.PIPE, shell=True, cwd=dir)
@@ -30,26 +33,58 @@ class Clippy:
 
             return output
         except subprocess.CalledProcessError as e:
-            print("Error in calling docker; ", e.output)
+            print("Error in calling cargo; ", e.output)
+            return None
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
             return None
 
     # build command with args
     def build_command(self):
-        ssh_args = []
+        gen_args = []
 
         if 'ssh' in self.config and self.config['ssh']:
-            ssh_args = 'eval $(ssh-agent -s) && ssh-add /root/.ssh/id_rsa'.split(" ")
-            ssh_args.append('&&')
+            gen_args.append('eval $(ssh-agent -s)')
+            gen_args.append('&&')
+            gen_args.append('ssh-add /root/.ssh/id_rsa')
+            gen_args.append('&&')
 
-        return ' '.join(ssh_args + self.args)
+        # CARGO_TARGET_DIR=/tmp/(rand) << prepend this to the command, randomise the dir for each cargo run
+        rand_path = ''.join(str(random.randrange(0, 9)) for i in range(10))
+
+        # make new cargo directory
+        gen_args.append("mkdir -p /tmp/" + rand_path)
+        gen_args.append('&&')
+
+        # copy cargo
+        gen_args.append("cp -r ~/.cargo/ /tmp/" + rand_path + "/")
+        gen_args.append('&&')
+
+        # vars for cargo to work in another location
+        gen_args.append("PATH=$PATH:/tmp/" + rand_path + "/.cargo/bin/")
+        gen_args.append("CARGO_HOME=/tmp/" + rand_path)
+
+        return ' '.join(gen_args + self.args)
 
     # main handler
     def run(self, dir):
+        localPaths = []
+
         if 'path_glob' in self.config:
             for path in glob.glob("/".join([dir, self.config['path_glob']])):
                 if os.path.exists("".join([path, "Cargo.toml"])):
                     print('Globbed path, found Cargo at: ', path)
-                    self.compile(path)
+                    localPaths.append(path)
+
+            print("Creating executor, theads of;", self.config['threads'])
+            executor = ThreadPoolExecutor(max_workers=self.config['threads'])
+            futures = []
+            for path in localPaths:
+                print("-- THREAD: Creating submission for; ", path)
+                futures.append(executor.submit(self.compile, path))
+
+            # wait for all clippy's to complete
+            wait(futures)
         else:
             self.compile(dir)
 
@@ -147,11 +182,20 @@ class Clippy:
         # inputs
         self.config['base_dir'] = '/github/workspace'
         arg_path_glob = os.environ.get('INPUT_PATH_GLOB')
-        arg_clippy_args = os.environ.get('INPUT_ARGS')
+        arg_threads = os.environ.get('INPUT_THREADS')
+        arg_clippy_args = os.environ.get('INPUT_CLIPPY_ARGS')
         arg_git_ssh_key = os.environ.get('INPUT_GIT_SSH_KEY')
 
         if arg_path_glob != None and len(arg_path_glob) > 0:
             self.config['path_glob'] = arg_path_glob
+
+        if arg_clippy_args != None and len(arg_clippy_args) > 0:
+            self.args.append(arg_clippy_args)
+
+        if arg_threads != None and arg_threads.isdigit():
+            self.config['threads'] = int(arg_threads)
+        else:
+            self.config['threads'] = 1
 
         if arg_git_ssh_key != None and len(arg_git_ssh_key) > 0:
             self.enable_ssh(arg_git_ssh_key)

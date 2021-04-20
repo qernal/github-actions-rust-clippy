@@ -28,13 +28,12 @@ jobs:
 
 ## Action parameters
 
-> Note: `args` is not yet implemented, `path_glob` and `git_ssh_key` are
-
 | Parameter | Description | Required |
 | ---- | ---- | ---- |
-| `args` | Arguments for clippy configuration | N |
+| `clippy_args` | Arguments for clippy configuration | N |
 | `path_glob` | Glob for path finding (when a repository has multiple rust projects) | N |
 | `git_ssh_key` | Base64 encoded SSH key used for cargo when private git repositories are specified | N |
+| `threads` | Threads to run at once - for concurrency of functions used with `path_glob` (integer) | N |
 
 Example;
 
@@ -43,7 +42,7 @@ Example;
       - uses: actions/checkout@v2
       - uses: qernal/github-actions-rust-clippy@v1.1
         with:
-          args: "--"
+          args: "--verbose"
           path_glob: "**/src"
           git_ssh_key: "${{ secrets.base64_ssh_key }}" # Must be base64 encoded and a valid RSA key
 ```
