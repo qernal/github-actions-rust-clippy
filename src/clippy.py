@@ -183,7 +183,7 @@ class Clippy:
         self.config['base_dir'] = '/github/workspace'
         arg_path_glob = os.environ.get('INPUT_PATH_GLOB')
         arg_threads = os.environ.get('INPUT_THREADS')
-        arg_clippy_args = os.environ.get('INPUT_ARGS')
+        arg_clippy_args = os.environ.get('INPUT_CLIPPY_ARGS')
         arg_git_ssh_key = os.environ.get('INPUT_GIT_SSH_KEY')
 
         if arg_path_glob != None and len(arg_path_glob) > 0:

@@ -30,7 +30,7 @@ jobs:
 
 | Parameter | Description | Required |
 | ---- | ---- | ---- |
-| `args` | Arguments for clippy configuration | N |
+| `clippy_args` | Arguments for clippy configuration | N |
 | `path_glob` | Glob for path finding (when a repository has multiple rust projects) | N |
 | `git_ssh_key` | Base64 encoded SSH key used for cargo when private git repositories are specified | N |
 | `threads` | Threads to run at once - for concurrency of functions used with `path_glob` (integer) | N |

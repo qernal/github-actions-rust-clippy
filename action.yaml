@@ -6,7 +6,7 @@ branding:
   color: purple
 
 inputs:
-  args:
+  clippy_args:
     description: Arguments for clippy configuration
     required: false
   path_glob:
