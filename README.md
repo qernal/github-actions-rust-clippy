@@ -56,3 +56,13 @@ docker run --rm -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy
 ```
 
 Replace the `pwd` with your workspace if you're not running from the current directory
+
+## Development
+
+### Running Locally
+
+The GitHub action call can be simulated locally, an example of this is below;
+
+```bash
+docker run --rm -e INPUT_PATH_GLOB=src/functions/*/*/ -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace
+```
