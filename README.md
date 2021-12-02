@@ -23,7 +23,7 @@ jobs:
     name: Lint package
     steps:
       - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@v1.3.0
+      - uses: qernal/github-actions-rust-clippy@v1.4.0
 ```
 
 ## Action parameters
@@ -40,7 +40,7 @@ Example;
 ```yaml
     steps:
       - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@v1.3.0
+      - uses: qernal/github-actions-rust-clippy@v1.4.0
         with:
           args: "--verbose"
           path_glob: "**/src"

@@ -27,7 +27,8 @@ class Clippy:
             output = process.stdout.readlines()
             process.wait()
 
-            if process.returncode != 0:
+            # 101 seems to be a bug
+            if (process.returncode != 0) and (process.returncode != 101):
                 print('Non-zero exit code; ', process.returncode)
                 exit(1)
 
@@ -95,6 +96,11 @@ class Clippy:
     # compile the command and output together
     def compile(self, dir):
         output = self.exec(dir)
+
+        if output == None:
+            print("Failed to lint")
+            exit(1)
+
         self.process_output(output, dir)
         self.generate_github_output()
 
@@ -125,47 +131,33 @@ class Clippy:
 
     # convert each compiler line to a valid github warning or error
     def line_compiler_to_gh(self, json_line, dir):
-        level = json_line['message']['level']
-        path = self.find_compiler_path(json_line)
-        message = json_line['message']['rendered']
-        span = self.find_compiler_span(json_line, path)
-
-        if path == None or span == None:
+        # validate we have spans
+        if 'spans' not in json_line['message']:
             return None
 
-        if 'path_glob' in self.config:
-            path = dir.replace(self.config['base_dir'] + "/", "") + path
+        level = json_line['message']['level']
+        message = json_line['message']['rendered']
 
-        if level == "warning":
-            return f"::warning file={path},line={span['line_start']},col={span['column_start']}::{message}"
+        # loop through spans for this error
+        for span in json_line['message']['spans']:
+            # skip any non-primary spans
+            if span['is_primary'] is not True:
+                continue
 
-        if level == "error":
-            return f"::error file={path},line={span['line_start']},col={span['column_start']}::{message}"
+            # assign initial path
+            path = span['file_name']
 
-        print("Line was missing compiler information")
-        return None
+            if 'path_glob' in self.config:
+                path = dir.replace(self.config['base_dir'] + "/", "") + span['file_name']
 
-    # find the span with valid file names and error codes
-    def find_compiler_span(self, json_line, src_path):
-        if "message" in json_line:
-            if "spans" in json_line['message']:
-                for span in json_line['message']['spans']:
-                    if "file_name" in span and span['file_name'] == src_path:
-                        return span
+            if level == "warning":
+                return f"::warning file={path},line={span['line_start']},col={span['column_start']}::{message}"
 
-        return None
+            if level == "error":
+                return f"::error file={path},line={span['line_start']},col={span['column_start']}::{message}"
 
-    # find the span with the file path that had the issue
-    def find_compiler_path(self, json_line):
-        if "message" in json_line:
-            if "children" in json_line['message']:
-                for child in json_line['message']['children']:
-                    if "spans" in child:
-                        for span in child['spans']:
-                            if "file_name" in span:
-                                return span['file_name']
-
-        return None
+            print("Line was missing compiler information")
+            return None
 
     # enable SSH key for private cargo repositories
     def enable_ssh(self, arg_git_ssh_key):
