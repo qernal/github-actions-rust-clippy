@@ -23,7 +23,7 @@ jobs:
     name: Lint package
     steps:
       - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@v1.1
+      - uses: qernal/github-actions-rust-clippy@v1.3.0
 ```
 
 ## Action parameters
@@ -40,7 +40,7 @@ Example;
 ```yaml
     steps:
       - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@v1.1
+      - uses: qernal/github-actions-rust-clippy@v1.3.0
         with:
           args: "--verbose"
           path_glob: "**/src"
@@ -52,7 +52,7 @@ Example;
 You can use the container without the context of the runner, and just run the container like so;
 
 ```bash
-docker run --rm -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:latest
+docker run --rm -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.3.0
 ```
 
 Replace the `pwd` with your workspace if you're not running from the current directory
