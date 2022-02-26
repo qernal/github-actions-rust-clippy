@@ -12,7 +12,8 @@ class Clippy:
     args = [
         "cargo",
         "clippy",
-        "--message-format=json"
+        "--message-format=json",
+        "--verbose"
     ]
     compiler_output = list()
     github_output = list()
@@ -27,6 +28,8 @@ class Clippy:
             output = process.stdout.readlines()
             process.wait()
 
+            print('-- Return code; ', process.returncode)
+
             # 101 seems to be a bug
             if (process.returncode != 0) and (process.returncode != 101):
                 print('Non-zero exit code; ', process.returncode)
@@ -38,6 +41,7 @@ class Clippy:
             return None
         except:
             print("Unexpected error:", sys.exc_info()[0])
+            print(sys.exc_info())
             return None
 
     # build command with args
@@ -50,20 +54,6 @@ class Clippy:
             gen_args.append('ssh-add /root/.ssh/id_rsa')
             gen_args.append('&&')
 
-        # CARGO_TARGET_DIR=/tmp/(rand) << prepend this to the command, randomise the dir for each cargo run
-        rand_path = ''.join(str(random.randrange(0, 9)) for i in range(10))
-
-        # make new cargo directory
-        gen_args.append("mkdir -p /tmp/" + rand_path)
-        gen_args.append('&&')
-
-        # copy cargo
-        gen_args.append("cp -r /root/.cargo/ /tmp/" + rand_path + "/")
-        gen_args.append('&&')
-
-        # vars for cargo to work in another location
-        gen_args.append("PATH=$PATH:/tmp/" + rand_path + "/.cargo/bin/")
-        gen_args.append("CARGO_HOME=/tmp/" + rand_path)
         gen_args.append("HOME=/root/") # fix for HOME injection from GH runner
 
         return ' '.join(gen_args + self.args)
@@ -138,6 +128,10 @@ class Clippy:
         level = json_line['message']['level']
         message = json_line['message']['rendered']
 
+        # likely a compiler error or dependency issue
+        if not json_line['message']['spans'] and json_line['message']['level'] == 'error':
+            return f"::error::{json_line['message']['message']} from {json_line['package_id']}"
+
         # loop through spans for this error
         for span in json_line['message']['spans']:
             # skip any non-primary spans
@@ -171,6 +165,12 @@ class Clippy:
 
         self.config['ssh'] = True
 
+    # switch to a different verison of rust stable
+    def switch_rust_version(self, arg_rust_version):
+        subprocess.call(['rustup', 'toolchain', 'install', arg_rust_version])
+        subprocess.call(['rustup', 'default', arg_rust_version])
+        subprocess.call(['cargo', 'clippy', '--version'])
+
     def __init__(self):
         # inputs
         self.config['base_dir'] = '/github/workspace'
@@ -178,6 +178,7 @@ class Clippy:
         arg_threads = os.environ.get('INPUT_THREADS')
         arg_clippy_args = os.environ.get('INPUT_CLIPPY_ARGS')
         arg_git_ssh_key = os.environ.get('INPUT_GIT_SSH_KEY')
+        arg_rust_version = os.environ.get('INPUT_RUST_VERSION')
 
         if arg_path_glob != None and len(arg_path_glob) > 0:
             self.config['path_glob'] = arg_path_glob
@@ -192,6 +193,9 @@ class Clippy:
 
         if arg_git_ssh_key != None and len(arg_git_ssh_key) > 0:
             self.enable_ssh(arg_git_ssh_key)
+
+        if arg_rust_version != None and len(arg_rust_version) > 0:
+            self.switch_rust_version(arg_rust_version)
 
         # run app
         self.run(self.config['base_dir'])
