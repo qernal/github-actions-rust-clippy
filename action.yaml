@@ -18,7 +18,10 @@ inputs:
   threads:
     description: Threads to run at once - for concurrency of functions used with `path_glob` (integer)
     required: false
+  rust_version:
+    description: Version of rust to use - e.g. 1.42
+    required: false
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.4.0'
+  image: 'docker://ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.5.0'
