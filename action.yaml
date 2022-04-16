@@ -21,7 +21,10 @@ inputs:
   rust_version:
     description: Version of rust to use - e.g. 1.42
     required: false
+  github_token:
+    description: GitHub PAT used for cargo when private git repositories are specified
+    required: false
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.5.0'
+  image: 'docker://ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.6.0'
