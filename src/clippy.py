@@ -3,8 +3,8 @@ import subprocess
 import os
 import glob
 import base64
-import random
 import sys
+import shlex
 from concurrent.futures import ThreadPoolExecutor, wait
 
 class Clippy:
@@ -53,6 +53,9 @@ class Clippy:
             gen_args.append('&&')
             gen_args.append('ssh-add /root/.ssh/id_rsa')
             gen_args.append('&&')
+
+        if 'github_token' in self.config and self.config['github_token']:
+            gen_args.append("CARGO_NET_GIT_FETCH_WITH_CLI=true")
 
         gen_args.append("HOME=/root/") # fix for HOME injection from GH runner
 
@@ -165,6 +168,11 @@ class Clippy:
 
         self.config['ssh'] = True
 
+    # enable github pat token
+    def enable_github_token(self, arg_github_token):
+        subprocess.run(shlex.split(f'git config --system url."https://clippy:{arg_github_token}@github.com/".insteadOf "https://github.com/"'))
+        self.config['github_token'] = True
+
     # switch to a different verison of rust stable
     def switch_rust_version(self, arg_rust_version):
         subprocess.call(['rustup', 'toolchain', 'install', arg_rust_version])
@@ -179,6 +187,7 @@ class Clippy:
         arg_clippy_args = os.environ.get('INPUT_CLIPPY_ARGS')
         arg_git_ssh_key = os.environ.get('INPUT_GIT_SSH_KEY')
         arg_rust_version = os.environ.get('INPUT_RUST_VERSION')
+        arg_github_pat = os.environ.get('INPUT_GITHUB_TOKEN')
 
         if arg_path_glob != None and len(arg_path_glob) > 0:
             self.config['path_glob'] = arg_path_glob
@@ -193,6 +202,9 @@ class Clippy:
 
         if arg_git_ssh_key != None and len(arg_git_ssh_key) > 0:
             self.enable_ssh(arg_git_ssh_key)
+
+        if arg_github_pat != None and len(arg_github_pat) > 0:
+            self.enable_github_token(arg_github_pat)
 
         if arg_rust_version != None and len(arg_rust_version) > 0:
             self.switch_rust_version(arg_rust_version)
