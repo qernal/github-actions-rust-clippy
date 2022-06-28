@@ -25,7 +25,7 @@ inputs:
     description: GitHub PAT used for cargo when private git repositories are specified
     required: false
   ssh_path_rewrite:
-    description: Rewrite SSH GitHub urls into HTTPS equivelent, only used with `github_token`
+    description: Rewrite SSH GitHub urls into HTTPS equivalent, only used with `github_token`
     required: false
 
 runs:
