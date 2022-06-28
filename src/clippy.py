@@ -24,7 +24,7 @@ class Clippy:
         print("-- COMMAND: ", command)
 
         try:
-            process = subprocess.Popen(command, stdout = subprocess.PIPE, shell=True, cwd=dir)
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, cwd=dir)
             output = process.stdout.readlines()
             process.wait()
 
@@ -32,6 +32,7 @@ class Clippy:
 
             # 101 seems to be a bug
             if (process.returncode != 0) and (process.returncode != 101):
+            # if process.returncode != 0:
                 print('Non-zero exit code; ', process.returncode)
                 exit(1)
 
@@ -170,8 +171,11 @@ class Clippy:
 
     # enable github pat token
     def enable_github_token(self, arg_github_token):
-        subprocess.run(shlex.split(f'git config --system url."https://clippy:{arg_github_token}@github.com/".insteadOf "https://github.com/"'))
-        self.config['github_token'] = True
+        subprocess.run(f'git config --global url."https://clippy:{arg_github_token}@github.com/".insteadOf "https://github.com/"', shell=True)
+
+        if 'ssh_path_rewrite' in self.config and self.config['ssh_path_rewrite']:
+            subprocess.run(f'git config --global url."https://clippy:{arg_github_token}@github.com/".insteadOf "ssh://git@github.com:"', shell=True)
+            subprocess.run(f'git config --global url."https://clippy:{arg_github_token}@github.com/".insteadOf "ssh://git@github.com/"', shell=True)
 
     # switch to a different verison of rust stable
     def switch_rust_version(self, arg_rust_version):
@@ -188,6 +192,7 @@ class Clippy:
         arg_git_ssh_key = os.environ.get('INPUT_GIT_SSH_KEY')
         arg_rust_version = os.environ.get('INPUT_RUST_VERSION')
         arg_github_pat = os.environ.get('INPUT_GITHUB_TOKEN')
+        arg_ssh_path_rewrite = os.environ.get('INPUT_SSH_PATH_REWRITE')
 
         if arg_path_glob != None and len(arg_path_glob) > 0:
             self.config['path_glob'] = arg_path_glob
@@ -204,7 +209,11 @@ class Clippy:
             self.enable_ssh(arg_git_ssh_key)
 
         if arg_github_pat != None and len(arg_github_pat) > 0:
+            if arg_ssh_path_rewrite != None and len(arg_ssh_path_rewrite) > 0:
+                self.config['ssh_path_rewrite'] = True
+
             self.enable_github_token(arg_github_pat)
+            self.config['github_token'] = True
 
         if arg_rust_version != None and len(arg_rust_version) > 0:
             self.switch_rust_version(arg_rust_version)
