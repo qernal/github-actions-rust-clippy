@@ -8,6 +8,7 @@ Github action to run clippy against a repository, this providers linting with th
 - SSH key for projects that use cargo to pull private Git repositories
 - Error and Warning outputs that highlight specific lines on PR's and commits
 - Specify specific version of Rust to use
+- GitHub PAT use and SSH path rewriting
 
 ![alt text](gh_lint_example.png "GitHub Lint Example")
 
@@ -35,7 +36,7 @@ jobs:
 | `path_glob` | Glob for path finding (when a repository has multiple rust projects) | N |
 | `git_ssh_key` | Base64 encoded SSH key used for cargo when private git repositories are specified | N |
 | `github_pat` | GitHub PAT (token) for PAT authentication when private git repositories are specified | N |
-| `ssh_path_rewrite` | Rewrite SSH GitHub urls into HTTPS equivelent, only used with `github_token` | N |
+| `ssh_path_rewrite` | Rewrite SSH GitHub urls into HTTPS equivalent, only used with `github_token` | N |
 | `threads` | Threads to run at once - for concurrency of functions used with `path_glob` (integer) | N |
 | `rust_version` | Version of rust to use, e.g. `1.42` otherwise the latest at action compilation will be used | N |
 
@@ -49,7 +50,7 @@ Example;
           args: "--verbose"
           path_glob: "**/src"
           git_ssh_key: "${{ secrets.base64_ssh_key }}" # Must be base64 encoded and a valid RSA key
-          rust_version: 1.42
+          rust_version: 1.59
 ```
 
 ## Manual runs
