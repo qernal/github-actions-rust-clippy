@@ -16,6 +16,7 @@ class Clippy:
         "--verbose"
     ]
     compiler_output = list()
+    compiler_returncode = 0
     github_output = list()
 
     # execute the clippy command
@@ -34,7 +35,7 @@ class Clippy:
             # if (process.returncode != 0) and (process.returncode != 101):
             if process.returncode != 0:
                 print('Non-zero exit code; ', process.returncode)
-                exit(1)
+                self.compiler_returncode = process.returncode
 
             return output
         except subprocess.CalledProcessError as e:
@@ -84,6 +85,10 @@ class Clippy:
 
         for message in self.github_output:
             print(message.replace('\n', '%0A').replace('\r', '%0D'))
+
+        # if we got a non-zero exit code, we should fail the job
+        if self.compiler_returncode != 0:
+            exit(1)
 
     # compile the command and output together
     def compile(self, dir):
@@ -179,9 +184,15 @@ class Clippy:
 
     # switch to a different verison of rust stable
     def switch_rust_version(self, arg_rust_version):
-        subprocess.call(['rustup', 'toolchain', 'install', arg_rust_version])
+        subprocess.call(['rustup', 'toolchain', 'install', arg_rust_version, '--profile', 'minimal'])
         subprocess.call(['rustup', 'default', arg_rust_version])
+        subprocess.call(f'rustup target add x86_64-unknown-linux-musl', shell=True)
+        subprocess.call(['rustup', 'component', 'add', 'clippy'])
         subprocess.call(['cargo', 'clippy', '--version'])
+
+        # useful for target issues
+        subprocess.run(f'rustup component list --installed', shell=True)
+        subprocess.run(f'rustup show', shell=True)
 
     def __init__(self):
         # inputs
