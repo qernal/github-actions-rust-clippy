@@ -31,8 +31,8 @@ class Clippy:
             print('-- Return code; ', process.returncode)
 
             # 101 seems to be a bug
-            if (process.returncode != 0) and (process.returncode != 101):
-            # if process.returncode != 0:
+            # if (process.returncode != 0) and (process.returncode != 101):
+            if process.returncode != 0:
                 print('Non-zero exit code; ', process.returncode)
                 exit(1)
 
