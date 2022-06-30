@@ -58,8 +58,6 @@ class Clippy:
         if 'github_token' in self.config and self.config['github_token']:
             gen_args.append("CARGO_NET_GIT_FETCH_WITH_CLI=true")
 
-        gen_args.append("HOME=/root/") # fix for HOME injection from GH runner
-
         return ' '.join(gen_args + self.args)
 
     # main handler
@@ -196,6 +194,10 @@ class Clippy:
         arg_github_pat = os.environ.get('INPUT_GITHUB_TOKEN')
         arg_ssh_path_rewrite = os.environ.get('INPUT_SSH_PATH_REWRITE')
 
+        # update os environ
+        os.environ['HOME'] = '/root'
+
+        # check for valid arguments
         if arg_path_glob != None and len(arg_path_glob) > 0:
             self.config['path_glob'] = arg_path_glob
 
