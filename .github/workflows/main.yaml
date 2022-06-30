@@ -14,7 +14,7 @@ jobs:
           export branch_name=${GITHUB_REF##*/}
           echo "branch_name=${branch_name,,}" >> $GITHUB_ENV
           echo "commit_sha_short=$(git rev-parse --short "$GITHUB_SHA") >> $GITHUB_ENV"
-          echo "release=v1.8.0" >> $GITHUB_ENV
+          echo "release=v1.8.1" >> $GITHUB_ENV
       - name: Build image
         shell: bash
         run: |
