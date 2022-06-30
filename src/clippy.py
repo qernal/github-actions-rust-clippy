@@ -171,11 +171,13 @@ class Clippy:
 
     # enable github pat token
     def enable_github_token(self, arg_github_token):
-        subprocess.run(f'git config --global url."https://clippy:{arg_github_token}@github.com/".insteadOf "https://github.com/"', shell=True)
+        token = base64.b64encode(f'pat:{arg_github_token}'.encode('ascii'))
+        subprocess.run(f'git config --global "http.https://github.com/.extraheader" "authorization: Basic {token.decode()}"', shell=True)
 
         if 'ssh_path_rewrite' in self.config and self.config['ssh_path_rewrite']:
-            subprocess.run(f'git config --global url."https://clippy:{arg_github_token}@github.com/".insteadOf "ssh://git@github.com:"', shell=True)
-            subprocess.run(f'git config --global url."https://clippy:{arg_github_token}@github.com/".insteadOf "ssh://git@github.com/"', shell=True)
+            subprocess.run(f'git config --global --add url.https://github.com/.insteadOf "git@github.com:"', shell=True)
+            subprocess.run(f'git config --global --add url.https://github.com/.insteadOf "ssh://git@github.com:"', shell=True)
+            subprocess.run(f'git config --global --add url.https://github.com/.insteadOf "ssh://git@github.com/"', shell=True)
 
     # switch to a different verison of rust stable
     def switch_rust_version(self, arg_rust_version):
