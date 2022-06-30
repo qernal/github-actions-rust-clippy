@@ -25,7 +25,7 @@ jobs:
     name: Lint package
     steps:
       - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@1.8.1
+      - uses: qernal/github-actions-rust-clippy@v1.8.1
 ```
 
 ## Action parameters
@@ -58,7 +58,7 @@ Example;
 You can use the container without the context of the runner, and just run the container like so;
 
 ```bash
-docker run --rm -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:1.8.1
+docker run --rm -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.8.1
 ```
 
 Replace the `pwd` with your workspace if you're not running from the current directory
@@ -70,7 +70,7 @@ Replace the `pwd` with your workspace if you're not running from the current dir
 In the root of this repository, the following will buuld the container;
 
 ```bash
-docker build -t ghcr.io/qernal/gh-actions/rust-clippy-x86_64:1.8.1 -f ./Dockerfile ./
+docker build -t ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.8.1 -f ./Dockerfile ./
 ```
 
 ### Running Locally
@@ -79,8 +79,8 @@ The GitHub action call can be simulated locally, an example of this is below;
 
 ```bash
 # Glob example of multiple cargos
-docker run --rm -e INPUT_PATH_GLOB=src/functions/*/*/ -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:1.8.1
+docker run --rm -e INPUT_PATH_GLOB=src/functions/*/*/ -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.8.1
 
 # Specifiying rust version
-docker run --rm -e INPUT_RUST_VERSION=1.56 -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:1.8.1
+docker run --rm -e INPUT_RUST_VERSION=1.56 -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.8.1
 ```
