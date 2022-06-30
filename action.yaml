@@ -30,4 +30,4 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v1.8.0'
+  image: 'docker://ghcr.io/qernal/gh-actions/rust-clippy-x86_64:1.8.1'
