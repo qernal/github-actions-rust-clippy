@@ -8,21 +8,31 @@ jobs:
     runs-on: ubuntu-latest
     name: Build gh-actions-rust-clippy
     steps:
+
       - uses: actions/checkout@v3
+
       - name: Get commit details
         run: |
           export branch_name=${GITHUB_REF##*/}
           echo "branch_name=${branch_name,,}" >> $GITHUB_ENV
           echo "commit_sha_short=$(git rev-parse --short "$GITHUB_SHA") >> $GITHUB_ENV"
           echo "release=v2.0.1" >> $GITHUB_ENV
+
       - name: Build image
         shell: bash
         run: |
           docker build -t ghcr.io/qernal/gh-actions/rust-clippy-x86_64:${{ env.branch_name }} -f ./Dockerfile ./
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Push image
         shell: bash
         run: |
-          echo ${{ secrets.GH_PAT }} | docker login ghcr.io --username qernal --password-stdin
           docker push ghcr.io/qernal/gh-actions/rust-clippy-x86_64:${{ env.branch_name }}
           docker tag ghcr.io/qernal/gh-actions/rust-clippy-x86_64:${{ env.branch_name }} ghcr.io/qernal/gh-actions/rust-clippy-x86_64:${{ env.release }}
           docker push ghcr.io/qernal/gh-actions/rust-clippy-x86_64:${{ env.release }}
