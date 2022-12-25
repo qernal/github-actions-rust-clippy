@@ -24,15 +24,15 @@ jobs:
     runs-on: self-hosted
     name: Lint package
     steps:
-      - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@v2.0.0
+      - uses: actions/checkout@v3
+      - uses: qernal/github-actions-rust-clippy@v2.0.1
 ```
 
 ## Action parameters
 
 | Parameter | Description | Required |
 | ---- | ---- | ---- |
-| `clippy_args` | Arguments for clippy configuration | N |
+| `clippy_args` | Arguments for clippy configuration, comma separated list as "--arg1,--arg2" | N |
 | `path_glob` | Glob for path finding (when a repository has multiple rust projects) | N |
 | `git_ssh_key` | Base64 encoded SSH key used for cargo when private git repositories are specified | N |
 | `github_pat` | GitHub PAT (token) for PAT authentication when private git repositories are specified | N |
@@ -44,10 +44,10 @@ Example;
 
 ```yaml
     steps:
-      - uses: actions/checkout@v2
-      - uses: qernal/github-actions-rust-clippy@v1.4.0
+      - uses: actions/checkout@v3
+      - uses: qernal/github-actions-rust-clippy@v2.0.1
         with:
-          args: "--verbose"
+          args: "--verbose,--all-targets"
           path_glob: "**/src"
           git_ssh_key: "${{ secrets.base64_ssh_key }}" # Must be base64 encoded and a valid RSA key
           rust_version: 1.59
@@ -79,8 +79,8 @@ The GitHub action call can be simulated locally, an example of this is below;
 
 ```bash
 # Glob example of multiple cargos
-docker run --rm -e INPUT_PATH_GLOB=src/functions/*/*/ -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v2.0.0
+docker run --rm -e INPUT_PATH_GLOB=src/functions/*/*/ -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v2.0.1
 
 # Specifiying rust version
-docker run --rm -e INPUT_RUST_VERSION=1.56 -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v2.0.0
+docker run --rm -e INPUT_RUST_VERSION=1.56 -e INPUT_THREADS=4 -e INPUT_GIT_SSH_KEY="$(cat ~/.ssh/my_key | base64 -w0)" -v `pwd`:/github/workspace ghcr.io/qernal/gh-actions/rust-clippy-x86_64:v2.0.1
 ```
