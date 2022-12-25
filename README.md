@@ -24,7 +24,7 @@ jobs:
     runs-on: self-hosted
     name: Lint package
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: qernal/github-actions-rust-clippy@v2.0.1
 ```
 
@@ -44,7 +44,7 @@ Example;
 
 ```yaml
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: qernal/github-actions-rust-clippy@v2.0.1
         with:
           args: "--verbose,--all-targets"
