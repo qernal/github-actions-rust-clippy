@@ -213,7 +213,7 @@ class Clippy:
             self.config['path_glob'] = arg_path_glob
 
         if arg_clippy_args != None and len(arg_clippy_args) > 0:
-            self.args.append(arg_clippy_args)
+            self.args += arg_clippy_args.split(',')
 
         if arg_threads != None and arg_threads.isdigit():
             self.config['threads'] = int(arg_threads)
